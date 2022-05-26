@@ -1,4 +1,4 @@
-const puppeteer = require('./puppeteer');
+const puppeteer = require("./puppeteer");
 
 const {
   welcomePageElements,
@@ -8,9 +8,9 @@ const {
   secureYourWalletPageElements,
   revealSeedPageElements,
   endOfFlowPageElements,
-} = require('../pages/metamask/first-time-flow-page');
-const { mainPageElements } = require('../pages/metamask/main-page');
-const { unlockPageElements } = require('../pages/metamask/unlock-page');
+} = require("../pages/metamask/first-time-flow-page");
+const { mainPageElements } = require("../pages/metamask/main-page");
+const { unlockPageElements } = require("../pages/metamask/unlock-page");
 const {
   notificationPageElements,
   permissionsPageElements,
@@ -18,18 +18,18 @@ const {
   signaturePageElements,
   encryptionPublicKeyPageElements,
   decryptPageElements,
-} = require('../pages/metamask/notification-page');
+} = require("../pages/metamask/notification-page");
 const {
   settingsPageElements,
   advancedPageElements,
   resetAccountModalElements,
   networksPageElements,
   addNetworkPageElements,
-} = require('../pages/metamask/settings-page');
+} = require("../pages/metamask/settings-page");
 const {
   confirmationPageElements,
-} = require('../pages/metamask/confirmation-page');
-const { setNetwork, getNetwork } = require('../support/helpers');
+} = require("../pages/metamask/confirmation-page");
+const { setNetwork, getNetwork } = require("../support/helpers");
 
 let walletAddress;
 let switchBackToCypressWindow;
@@ -66,7 +66,7 @@ module.exports = {
     }
     return true;
   },
-  unlock: async password => {
+  unlock: async (password) => {
     await module.exports.fixBlankPage();
     await puppeteer.waitAndType(unlockPageElements.passwordInput, password);
     await puppeteer.waitAndClick(unlockPageElements.unlockButton);
@@ -79,15 +79,15 @@ module.exports = {
     await puppeteer.waitAndClick(metametricsPageElements.optOutAnalyticsButton);
     await puppeteer.waitAndType(
       firstTimeFlowFormPageElements.secretWordsInput,
-      secretWords,
+      secretWords
     );
     await puppeteer.waitAndType(
       firstTimeFlowFormPageElements.passwordInput,
-      password,
+      password
     );
     await puppeteer.waitAndType(
       firstTimeFlowFormPageElements.confirmPasswordInput,
-      password,
+      password
     );
     await puppeteer.waitAndClick(firstTimeFlowFormPageElements.termsCheckbox);
     await puppeteer.waitAndClick(firstTimeFlowFormPageElements.importButton);
@@ -96,19 +96,19 @@ module.exports = {
     await module.exports.closePopup();
     return true;
   },
-  createWallet: async password => {
+  createWallet: async (password) => {
     await puppeteer.waitAndClick(firstTimeFlowPageElements.createWalletButton);
     await puppeteer.waitAndClick(metametricsPageElements.optOutAnalyticsButton);
     await puppeteer.waitAndType(
       firstTimeFlowFormPageElements.newPasswordInput,
-      password,
+      password
     );
     await puppeteer.waitAndType(
       firstTimeFlowFormPageElements.confirmPasswordInput,
-      password,
+      password
     );
     await puppeteer.waitAndClick(
-      firstTimeFlowFormPageElements.newSignupCheckbox,
+      firstTimeFlowFormPageElements.newSignupCheckbox
     );
     await puppeteer.waitAndClick(firstTimeFlowFormPageElements.importButton);
     await puppeteer.waitAndClick(secureYourWalletPageElements.nextButton);
@@ -117,24 +117,24 @@ module.exports = {
     await module.exports.closePopup();
     return true;
   },
-  importAccount: async privateKey => {
+  importAccount: async (privateKey) => {
     await switchToMetamaskIfNotActive();
 
     await puppeteer.waitAndClick(mainPageElements.accountMenu.button);
     await puppeteer.waitAndClick(
-      mainPageElements.accountMenu.importAccountButton,
+      mainPageElements.accountMenu.importAccountButton
     );
 
     await puppeteer.waitAndType(
       mainPageElements.importAccount.input,
-      privateKey,
+      privateKey
     );
     await puppeteer.waitAndClick(mainPageElements.importAccount.importButton);
 
     await switchToCypressIfNotActive();
     return true;
   },
-  createAccount: async accountName => {
+  createAccount: async (accountName) => {
     if (accountName) {
       accountName = accountName.toLowerCase();
     }
@@ -143,13 +143,13 @@ module.exports = {
 
     await puppeteer.waitAndClick(mainPageElements.accountMenu.button);
     await puppeteer.waitAndClick(
-      mainPageElements.accountMenu.createAccountButton,
+      mainPageElements.accountMenu.createAccountButton
     );
 
     if (accountName) {
       await puppeteer.waitAndType(
         mainPageElements.createAccount.input,
-        accountName,
+        accountName
       );
     }
     await puppeteer.waitAndClick(mainPageElements.createAccount.createButton);
@@ -157,8 +157,8 @@ module.exports = {
     await switchToCypressIfNotActive();
     return true;
   },
-  switchAccount: async accountNameOrAccountNumber => {
-    if (typeof accountNameOrAccountNumber === 'string') {
+  switchAccount: async (accountNameOrAccountNumber) => {
+    if (typeof accountNameOrAccountNumber === "string") {
       accountNameOrAccountNumber = accountNameOrAccountNumber.toLowerCase();
     }
 
@@ -166,77 +166,77 @@ module.exports = {
 
     await puppeteer.waitAndClick(mainPageElements.accountMenu.button);
 
-    if (typeof accountNameOrAccountNumber === 'number') {
+    if (typeof accountNameOrAccountNumber === "number") {
       await puppeteer.waitAndClick(
-        mainPageElements.accountMenu.accountButton(accountNameOrAccountNumber),
+        mainPageElements.accountMenu.accountButton(accountNameOrAccountNumber)
       );
     } else {
       await puppeteer.waitAndClickByText(
         mainPageElements.accountMenu.accountName,
-        accountNameOrAccountNumber,
+        accountNameOrAccountNumber
       );
     }
 
     await switchToCypressIfNotActive();
     return true;
   },
-  changeNetwork: async network => {
+  changeNetwork: async (network) => {
     await switchToMetamaskIfNotActive();
 
-    if (typeof network === 'string') {
+    if (typeof network === "string") {
       network = network.toLowerCase();
-    } else if (typeof network === 'object') {
+    } else if (typeof network === "object") {
       network.networkName = network.networkName.toLowerCase();
     }
 
     await puppeteer.waitAndClick(mainPageElements.networkSwitcher.button);
-    if (network === 'main' || network === 'mainnet') {
+    if (network === "main" || network === "mainnet") {
       await puppeteer.waitAndClick(
-        mainPageElements.networkSwitcher.networkButton(0),
+        mainPageElements.networkSwitcher.networkButton(0)
       );
-    } else if (network === 'ropsten') {
+    } else if (network === "ropsten") {
       await puppeteer.waitAndClick(
-        mainPageElements.networkSwitcher.networkButton(1),
+        mainPageElements.networkSwitcher.networkButton(1)
       );
-    } else if (network === 'kovan') {
+    } else if (network === "kovan") {
       await puppeteer.waitAndClick(
-        mainPageElements.networkSwitcher.networkButton(2),
+        mainPageElements.networkSwitcher.networkButton(2)
       );
-    } else if (network === 'rinkeby') {
+    } else if (network === "rinkeby") {
       await puppeteer.waitAndClick(
-        mainPageElements.networkSwitcher.networkButton(3),
+        mainPageElements.networkSwitcher.networkButton(3)
       );
-    } else if (network === 'goerli') {
+    } else if (network === "goerli") {
       await puppeteer.waitAndClick(
-        mainPageElements.networkSwitcher.networkButton(4),
+        mainPageElements.networkSwitcher.networkButton(4)
       );
-    } else if (network === 'localhost') {
+    } else if (network === "localhost") {
       await puppeteer.waitAndClick(
-        mainPageElements.networkSwitcher.networkButton(5),
+        mainPageElements.networkSwitcher.networkButton(5)
       );
-    } else if (typeof network === 'object') {
+    } else if (typeof network === "object") {
       await puppeteer.waitAndClickByText(
         mainPageElements.networkSwitcher.dropdownMenuItem,
-        network.networkName,
+        network.networkName
       );
     } else {
       await puppeteer.waitAndClickByText(
         mainPageElements.networkSwitcher.dropdownMenuItem,
-        network,
+        network
       );
     }
 
     setNetwork(network);
 
-    if (typeof network === 'object') {
+    if (typeof network === "object") {
       await puppeteer.waitForText(
         mainPageElements.networkSwitcher.networkName,
-        network.networkName,
+        network.networkName
       );
     } else {
       await puppeteer.waitForText(
         mainPageElements.networkSwitcher.networkName,
-        network,
+        network
       );
     }
 
@@ -244,7 +244,7 @@ module.exports = {
 
     return true;
   },
-  addNetwork: async network => {
+  addNetwork: async (network) => {
     await switchToMetamaskIfNotActive();
 
     if (
@@ -262,9 +262,9 @@ module.exports = {
       };
     }
 
-    if (typeof network === 'string') {
+    if (typeof network === "string") {
       network = network.toLowerCase();
-    } else if (typeof network === 'object') {
+    } else if (typeof network === "object") {
       network.networkName = network.networkName.toLowerCase();
     }
 
@@ -274,28 +274,28 @@ module.exports = {
     await puppeteer.waitAndClick(networksPageElements.addNetworkButton);
     await puppeteer.waitAndType(
       addNetworkPageElements.networkNameInput,
-      network.networkName,
+      network.networkName
     );
     await puppeteer.waitAndType(
       addNetworkPageElements.rpcUrlInput,
-      network.rpcUrl,
+      network.rpcUrl
     );
     await puppeteer.waitAndType(
       addNetworkPageElements.chainIdInput,
-      network.chainId,
+      network.chainId
     );
 
     if (network.symbol) {
       await puppeteer.waitAndType(
         addNetworkPageElements.symbolInput,
-        network.symbol,
+        network.symbol
       );
     }
 
     if (network.blockExplorer) {
       await puppeteer.waitAndType(
         addNetworkPageElements.blockExplorerInput,
-        network.blockExplorer,
+        network.blockExplorer
       );
     }
 
@@ -306,7 +306,7 @@ module.exports = {
 
     await puppeteer.waitForText(
       mainPageElements.networkSwitcher.networkName,
-      network.networkName,
+      network.networkName
     );
 
     await switchToCypressIfNotActive();
@@ -317,11 +317,11 @@ module.exports = {
 
     await puppeteer.waitAndClick(mainPageElements.optionsMenu.button);
     await puppeteer.waitAndClick(
-      mainPageElements.optionsMenu.connectedSitesButton,
+      mainPageElements.optionsMenu.connectedSitesButton
     );
     await puppeteer.waitAndClick(mainPageElements.connectedSites.trashButton);
     await puppeteer.waitAndClick(
-      mainPageElements.connectedSites.disconnectButton,
+      mainPageElements.connectedSites.disconnectButton
     );
 
     // close popup if present
@@ -341,7 +341,7 @@ module.exports = {
 
     await puppeteer.waitAndClick(mainPageElements.optionsMenu.button);
     await puppeteer.waitAndClick(
-      mainPageElements.optionsMenu.connectedSitesButton,
+      mainPageElements.optionsMenu.connectedSitesButton
     );
     const trashButtons = await puppeteer
       .metamaskWindow()
@@ -350,7 +350,7 @@ module.exports = {
     for (const trashButton of trashButtons) {
       await puppeteer.waitAndClick(mainPageElements.connectedSites.trashButton);
       await puppeteer.waitAndClick(
-        mainPageElements.connectedSites.disconnectButton,
+        mainPageElements.connectedSites.disconnectButton
       );
     }
 
@@ -390,21 +390,31 @@ module.exports = {
     await switchToCypressIfNotActive();
     return true;
   },
+  async signMessage() {
+    await puppeteer.metamaskWindow().waitForTimeout(3000);
+    const notificationPage = await puppeteer.switchToMetamaskNotification();
+    await puppeteer.waitAndClick(
+      notificationPageElements.signButton,
+      notificationPage
+    );
+    await puppeteer.metamaskWindow().waitForTimeout(3000);
+    return true;
+  },
   confirmSignatureRequest: async () => {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       signaturePageElements.confirmSignatureRequestButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
   },
   confirmTypedV4SignatureRequest: async () => {
-    const notificationPage = await puppeteer.switchToMetamaskNotification()
+    const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
-        signaturePageElements.confirmTypedV4SignatureRequestButton,
-        notificationPage,
-      );
+      signaturePageElements.confirmTypedV4SignatureRequestButton,
+      notificationPage
+    );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
   },
@@ -412,7 +422,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       signaturePageElements.rejectSignatureRequestButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(1000);
     return true;
@@ -421,7 +431,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       signaturePageElements.rejectTypedV4SignatureRequestButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(1000);
     return true;
@@ -430,7 +440,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       notificationPageElements.allowToSpendButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
@@ -439,32 +449,32 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       notificationPageElements.rejectToSpendButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(1000);
     return true;
   },
-  acceptAccess: async allAccounts => {
+  acceptAccess: async (allAccounts) => {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     if (allAccounts === true) {
       await puppeteer.waitAndClick(
         notificationPageElements.selectAllCheck,
-        notificationPage,
+        notificationPage
       );
     }
     await puppeteer.waitAndClick(
       notificationPageElements.nextButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.waitAndClick(
       permissionsPageElements.connectButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
   },
-  confirmTransaction: async gasConfig => {
-    const isKovanTestnet = getNetwork().networkName === 'kovan';
+  confirmTransaction: async (gasConfig) => {
+    const isKovanTestnet = getNetwork().networkName === "kovan";
     // todo: remove waitForTimeout below after improving switchToMetamaskNotification
     await puppeteer.metamaskWindow().waitForTimeout(1000);
     const notificationPage = await puppeteer.switchToMetamaskNotification();
@@ -472,19 +482,19 @@ module.exports = {
       await puppeteer.waitAndSetValue(
         gasConfig.gasFee.toString(),
         confirmPageElements.gasFeeInput,
-        notificationPage,
+        notificationPage
       );
     } else if (isKovanTestnet) {
       await puppeteer.waitAndSetValue(
-        '1',
+        "1",
         confirmPageElements.gasFeeInput,
-        notificationPage,
+        notificationPage
       );
     } else {
       await puppeteer.waitAndClick(
         confirmPageElements.gasFeeArrowUpButton,
         notificationPage,
-        10,
+        10
       );
     }
 
@@ -492,17 +502,17 @@ module.exports = {
       await puppeteer.waitAndSetValue(
         gasConfig.gasLimit.toString(),
         confirmPageElements.gasLimitInput,
-        notificationPage,
+        notificationPage
       );
     }
     // metamask reloads popup after changing a fee, you have to wait for this event otherwise transaction will fail
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     await notificationPage.waitForFunction(
-      `document.querySelector('${confirmPageElements.gasLimitInput}').value != "0"`,
+      `document.querySelector('${confirmPageElements.gasLimitInput}').value != "0"`
     );
     await puppeteer.waitAndClick(
       confirmPageElements.confirmButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
@@ -511,7 +521,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       confirmPageElements.rejectButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(1000);
     return true;
@@ -520,7 +530,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       encryptionPublicKeyPageElements.confirmEncryptionPublicKeyButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
@@ -530,7 +540,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       encryptionPublicKeyPageElements.rejectEncryptionPublicKeyButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
@@ -539,7 +549,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       decryptPageElements.confirmDecryptionRequestButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
@@ -548,7 +558,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       decryptPageElements.rejectDecryptionRequestButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
@@ -557,7 +567,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       confirmationPageElements.footer.approveButton,
-      notificationPage,
+      notificationPage
     );
     return true;
   },
@@ -565,7 +575,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       confirmationPageElements.footer.cancelButton,
-      notificationPage,
+      notificationPage
     );
     return true;
   },
@@ -573,7 +583,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       confirmationPageElements.footer.approveButton,
-      notificationPage,
+      notificationPage
     );
     await puppeteer.metamaskWindow().waitForTimeout(3000);
     return true;
@@ -582,7 +592,7 @@ module.exports = {
     const notificationPage = await puppeteer.switchToMetamaskNotification();
     await puppeteer.waitAndClick(
       confirmationPageElements.footer.cancelButton,
-      notificationPage,
+      notificationPage
     );
     return true;
   },
@@ -596,10 +606,10 @@ module.exports = {
 
     await puppeteer.waitAndClick(mainPageElements.optionsMenu.button);
     await puppeteer.waitAndClick(
-      mainPageElements.optionsMenu.accountDetailsButton,
+      mainPageElements.optionsMenu.accountDetailsButton
     );
     walletAddress = await puppeteer.waitAndGetValue(
-      mainPageElements.accountModal.walletAddressInput,
+      mainPageElements.accountModal.walletAddressInput
     );
     await puppeteer.waitAndClick(mainPageElements.accountModal.closeButton);
 
@@ -612,18 +622,18 @@ module.exports = {
       (process.env.NETWORK_NAME &&
         process.env.RPC_URL &&
         process.env.CHAIN_ID) ||
-      typeof network == 'object';
+      typeof network == "object";
 
     await puppeteer.init();
     await puppeteer.assignWindows();
-    await puppeteer.assignActiveTabName('metamask');
+    await puppeteer.assignActiveTabName("metamask");
     await puppeteer.metamaskWindow().waitForTimeout(1000);
     if (
       (await puppeteer.metamaskWindow().$(unlockPageElements.unlockPage)) ===
       null
     ) {
       await module.exports.confirmWelcomePage();
-      if (secretWordsOrPrivateKey.includes(' ')) {
+      if (secretWordsOrPrivateKey.includes(" ")) {
         // secret words
         await module.exports.importWallet(secretWordsOrPrivateKey, password);
       } else {

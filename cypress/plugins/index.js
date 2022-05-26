@@ -1,8 +1,8 @@
-const helpers = require('../support/helpers');
-const puppeteer = require('../support/puppeteer');
-const metamask = require('../support/metamask');
-const synthetix = require('../support/synthetix');
-const etherscan = require('../support/etherscan');
+const helpers = require("../support/helpers");
+const puppeteer = require("../support/puppeteer");
+const metamask = require("../support/metamask");
+const synthetix = require("../support/synthetix");
+const etherscan = require("../support/etherscan");
 
 /**
  * @type {Cypress.PluginConfig}
@@ -11,32 +11,32 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
 
-  on('before:browser:launch', async (browser = {}, arguments_) => {
-    if (browser.name === 'chrome' && browser.isHeadless) {
-      console.log('TRUE'); // required by cypress ¯\_(ツ)_/¯
-      arguments_.args.push('--window-size=1920,1080');
+  on("before:browser:launch", async (browser = {}, arguments_) => {
+    if (browser.name === "chrome" && browser.isHeadless) {
+      console.log("TRUE"); // required by cypress ¯\_(ツ)_/¯
+      arguments_.args.push("--window-size=1920,1080");
       return arguments_;
     }
 
-    if (browser.name === 'electron') {
-      arguments_['width'] = 1920;
-      arguments_['height'] = 1080;
-      arguments_['resizable'] = false;
+    if (browser.name === "electron") {
+      arguments_["width"] = 1920;
+      arguments_["height"] = 1080;
+      arguments_["resizable"] = false;
       return arguments_;
     }
 
     // metamask welcome screen blocks cypress from loading
-    if (browser.name === 'chrome') {
+    if (browser.name === "chrome") {
       arguments_.args.push(
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding"
       );
     }
     if (!process.env.SKIP_METAMASK_INSTALL) {
       // NOTE: extensions cannot be loaded in headless Chrome
       const metamaskPath = await helpers.prepareMetamask(
-        process.env.METAMASK_VERSION || '9.7.1',
+        process.env.METAMASK_VERSION || "9.7.1"
       );
       arguments_.extensions.push(metamaskPath);
     }
@@ -44,13 +44,13 @@ module.exports = (on, config) => {
     return arguments_;
   });
 
-  on('task', {
+  on("task", {
     error(message) {
-      console.error('\u001B[31m', 'ERROR:', message, '\u001B[0m');
+      console.error("\u001B[31m", "ERROR:", message, "\u001B[0m");
       return true;
     },
     warn(message) {
-      console.warn('\u001B[33m', 'WARNING:', message, '\u001B[0m');
+      console.warn("\u001B[33m", "WARNING:", message, "\u001B[0m");
       return true;
     },
     // puppeteer commands
@@ -70,7 +70,7 @@ module.exports = (on, config) => {
       const cleared = await puppeteer.clearWindows();
       return cleared;
     },
-    assignActiveTabName: async tabName => {
+    assignActiveTabName: async (tabName) => {
       const assigned = await puppeteer.assignActiveTabName(tabName);
       return assigned;
     },
@@ -94,31 +94,31 @@ module.exports = (on, config) => {
       const notificationPage = await puppeteer.switchToMetamaskNotification();
       return notificationPage;
     },
-    unlockMetamask: async password => {
+    unlockMetamask: async (password) => {
       const unlocked = await metamask.unlock(password);
       return unlocked;
     },
-    importMetamaskAccount: async privateKey => {
+    importMetamaskAccount: async (privateKey) => {
       const imported = await metamask.importAccount(privateKey);
       return imported;
     },
-    createMetamaskAccount: async accountName => {
+    createMetamaskAccount: async (accountName) => {
       const created = await metamask.createAccount(accountName);
       return created;
     },
-    switchMetamaskAccount: async accountNameOrAccountNumber => {
+    switchMetamaskAccount: async (accountNameOrAccountNumber) => {
       const switched = await metamask.switchAccount(accountNameOrAccountNumber);
       return switched;
     },
-    addMetamaskNetwork: async network => {
+    addMetamaskNetwork: async (network) => {
       const networkAdded = await metamask.addNetwork(network);
       return networkAdded;
     },
-    changeMetamaskNetwork: async network => {
+    changeMetamaskNetwork: async (network) => {
       if (process.env.NETWORK_NAME && !network) {
         network = process.env.NETWORK_NAME;
       } else if (!network) {
-        network = 'kovan';
+        network = "kovan";
       }
       const networkChanged = await metamask.changeNetwork(network);
       return networkChanged;
@@ -138,6 +138,10 @@ module.exports = (on, config) => {
     disconnectMetamaskWalletFromAllDapps: async () => {
       const disconnected = await metamask.disconnectWalletFromAllDapps();
       return disconnected;
+    },
+    signMetamaskMessage: async () => {
+      const confirmed = await metamask.signMessage();
+      return confirmed;
     },
     confirmMetamaskSignatureRequest: async () => {
       const confirmed = await metamask.confirmSignatureRequest();
@@ -179,11 +183,11 @@ module.exports = (on, config) => {
       const rejected = await metamask.rejectPermissionToSpend();
       return rejected;
     },
-    acceptMetamaskAccess: async allAccounts => {
+    acceptMetamaskAccess: async (allAccounts) => {
       const accepted = await metamask.acceptAccess(allAccounts);
       return accepted;
     },
-    confirmMetamaskTransaction: async gasConfig => {
+    confirmMetamaskTransaction: async (gasConfig) => {
       const confirmed = await metamask.confirmTransaction(gasConfig);
       return confirmed;
     },
@@ -220,7 +224,7 @@ module.exports = (on, config) => {
     },
     setupMetamask: async ({
       secretWordsOrPrivateKey,
-      network = 'kovan',
+      network = "kovan",
       password,
     }) => {
       if (process.env.NETWORK_NAME) {
