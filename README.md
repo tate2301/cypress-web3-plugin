@@ -4,15 +4,7 @@ This plugin is based on the solutions brought by [Jakub Mucha - drptbl](https://
 
 Forked from - [cypress-metamask](https://github.com/CraftAcademyLabs/cypress-metamask)
 
-### Setup
-Install the package using `yarn` or `npm`:
-
-```bash
-$ yarn add -D cypress-web3-plugin
-// or 
-$ npm i -D cypress-web3-plugin
-```
-
+### Usage
 Import the plugin in `cypress/support/index.js` 
 
 ```js
